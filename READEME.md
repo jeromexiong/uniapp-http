@@ -1,10 +1,30 @@
-import Http from './http';
-import config from "./config";
+# 封装类axios方式的Promise网络请求库
+完成`get`,`post`,`put`,`delete`,`upload`,`intercepter`
 
+## How to use?
+```
+import Http from "http";
 const http = new Http();
+// 配置默认设置
 http.config.baseURL = config.baseURL;
+// 结构方式获取class方法
 const { upload, get, post } = http;
 
+// Promise API 请求
+export const test = data => get("ajax/echo/text?name=uni-app", data);
+
+// 如果想要全局使用，请在main.js文件中挂载
+import * as api from './common/service/api.js'
+Vue.prototype.$api = api
+
+// call the method
+this.$api.test({ noncestr: Date.now() })
+// or
+test({ noncestr: Date.now() });
+```
+
+## intercepter 拦截器
+```
 // 请求拦截器
 http.interceptor.request = config => {
   console.log(config)
@@ -27,8 +47,4 @@ http.interceptor.response = response => {
 	// }
 	return response;
 }
-
-const test = data => get("ajax/echo/text?name=uni-app", data)
-export {
-	test
-}
+```
