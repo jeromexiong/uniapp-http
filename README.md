@@ -1,4 +1,4 @@
-# 封装类axios方式的Promise网络请求库
+# 封装 Uniapp 类axios方式的Promise网络请求库
 完成`get`,`post`,`put`,`delete`,`upload`,`intercepter`
 
 ## How to use?
@@ -7,7 +7,7 @@ import Http from "http";
 const http = new Http();
 // 配置默认设置
 http.config.baseURL = config.baseURL;
-// 结构方式获取class方法
+//解构方式获取class方法
 const { upload, get, post } = http;
 
 // Promise API 请求
