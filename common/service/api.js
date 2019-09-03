@@ -8,7 +8,7 @@ const { upload, get, post } = http;
 // 请求拦截器
 http.interceptor.request = config => {
   console.log(config)
-    // if (config.method === "post") {
+  	// if (config.method.toUpperCase() === "POST") {
     //   config.data = qs.stringify(config.data);
     // }
     // token 放在headers中会变成复杂请求，多一次options请求；body或者query则不会

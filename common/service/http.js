@@ -156,7 +156,12 @@ export default class Http {
       formData: data,
       header: {},
       complete(res) {
-        typeof complete === "function" && complete(res);
+        if (res.errMsg === "uploadFile:ok") {
+          typeof complete === "function" &&
+            complete(JSON.parse(res.data || "{}"));
+        } else {
+          typeof complete === "function" && complete({});
+        }
       }
     });
   }
