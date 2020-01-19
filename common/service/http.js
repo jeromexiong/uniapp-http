@@ -1,8 +1,11 @@
 /**
- * @Class uni-app Http网络请求库
+ * @Class Http网络请求库
  * @Author Jerome Xiong
  * @Date 2019-07-08
- * @Email jerome_xiong@outlook.com
+ * @Email jerome_xiong@foxmail.com
+ *
+ * 当登录状态使用`token`保持时，需要设置服务端返回的`token`
+ * `uni.setStorageSync("token", token);`
  * */
 export default class Http {
   constructor() {
@@ -25,7 +28,11 @@ export default class Http {
     success() {},
     fail() {},
     complete() {},
-    debug: true
+    debug: true,
+    /** 是否使用`cookie`登录；(默认`false`, 否则使用`token`) */
+    setCookie: false,
+    /** 当为`token`登录时，是否将`token`放在请求参数中，减少`options`请求。默认false */
+    notOptions: false
   };
   interceptor = {
     request(config) {
@@ -83,9 +90,6 @@ export default class Http {
     }
   }
   request(options = {}) {
-    // 取消options请求
-    if (uni.getStorageSync("token"))
-      options.data = { ...options.data, token: uni.getStorageSync("token") };
     if (options.data) {
       options.data = Http.filterNull(options.data);
     }
@@ -95,12 +99,28 @@ export default class Http {
     options.data = options.data || {};
     options.header = options.header || this.config.header;
     options.dataType = options.dataType || this.config.dataType;
+
+    if (this.config.setCookie) {
+      const cookie = uni.getStorageSync("cookie");
+      if (cookie) options.header["cookie"] = cookie;
+    } else if (this.config.notOptions) {
+      const token = uni.getStorageSync("token");
+      if (token) options.data = { ...options.data, token };
+    } else {
+      const token = uni.getStorageSync("token");
+      if (token) options.header["token"] = token;
+    }
+
     return new Promise((resolve, reject) => {
       options.complete = response => {
-        let statusCode = response.statusCode;
+        const statusCode = response.statusCode;
         response.config = _config;
         response = this.interceptor.response(response) || response;
         if (statusCode === 200) {
+          if (this.config.setCookie) {
+            const cookie = response.header["Set-Cookie"];
+            if (cookie) uni.setStorageSync("cookie", cookie);
+          }
           this.print(response);
           resolve(response);
         } else {
@@ -120,6 +140,7 @@ export default class Http {
     options.method = "GET";
     return this.request(options);
   }
+
   post(url, data, options = {}) {
     options.url = url;
     options.data = data;

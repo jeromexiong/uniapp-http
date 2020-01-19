@@ -3,28 +3,22 @@ import config from "./config";
 
 const http = new Http();
 http.config.baseURL = config.baseURL;
+http.config.debug = false;
+http.config.notOptions = true;
 const { upload, get, post } = http;
 
 // 请求拦截器
 http.interceptor.request = config => {
   console.log(config)
-  	// if (config.method.toUpperCase() === "POST") {
-    //   config.data = qs.stringify(config.data);
-    // }
-    // token 放在headers中会变成复杂请求，多一次options请求；body或者query则不会
-    // const token = uni.getStorageSync("token");
-    // if (token) config.headers["token"] = token;
-    return config;
+  return config;
 }
 // 响应拦截器
 http.interceptor.response = response => {
 	console.log(response)
-	// if (response.config.url.indexOf("users/login") != -1 && response.data.code == 200) {
-	// 	uni.setStorageSync({
-	// 		key: "token",
-	// 		data: response.data.data.token
-	// 	})
-	// }
+  // 如果使用token登录，请设置token
+  // if (response.data.msg == "request login is successed") {
+  //   uni.setStorageSync("token", response.data.data.token);
+  // }
 	return response;
 }
 

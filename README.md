@@ -1,12 +1,18 @@
 # 封装 Uniapp 类axios方式的Promise网络请求库
 完成`get`,`post`,`put`,`delete`,`upload`,`intercepter`
 
+⚠️如若在微信小程序中使用，请替换`uni.` 为 `wx.`
+
 ## How to use?
 ```
 import Http from "http";
 const http = new Http();
 // 配置默认设置
 http.config.baseURL = config.baseURL;
+// 是否打开日志
+http.config.debug = false;
+// token是否放在请求体中
+http.config.notOptions = true;
 //解构方式获取class方法
 const { upload, get, post } = http;
 
@@ -28,23 +34,15 @@ test({ noncestr: Date.now() });
 // 请求拦截器
 http.interceptor.request = config => {
   console.log(config)
-    // if (config.method === "post") {
-    //   config.data = qs.stringify(config.data);
-    // }
-    // token 放在headers中会变成复杂请求，多一次options请求；body或者query则不会
-    // const token = uni.getStorageSync("token");
-    // if (token) config.headers["token"] = token;
     return config;
 }
 // 响应拦截器
 http.interceptor.response = response => {
 	console.log(response)
-	// if (response.config.url.indexOf("users/login") != -1 && response.data.code == 200) {
-	// 	uni.setStorageSync({
-	// 		key: "token",
-	// 		data: response.data.data.token
-	// 	})
-	// }
+  // 如果使用token登录，请设置token
+  // if (response.data.msg == "request login is successed") {
+  //   uni.setStorageSync("token", response.data.data.token);
+  // }
 	return response;
 }
 ```
